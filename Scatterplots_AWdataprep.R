@@ -59,6 +59,12 @@ library(ggplot2)
     ylab("Distance")
   plot(scatter)  
   
-    
+  #Scatterplot of Distance vs. Time with color 
+  library(ggplot2)
+  scatter<- ggplot(applewatch, aes(x = Heart, y = Distance)) + 
+    geom_point(aes(colour = factor(DateTime)), alpha = 1/5) +
+    xlab("Date and Time")+
+    ylab("Distance")
+  plot(scatter_cat)       
   
   
