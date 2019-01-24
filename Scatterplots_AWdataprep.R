@@ -29,7 +29,7 @@ summary(applewatch$Distance)
 
 #Scatterplot of Heart rate vs. Time 
 library(ggplot2)
-scatter<- ggplot(applewatch, aes(x = DateTime, y = Heart)) + 
+ scatter<- ggplot(applewatch, aes(x = DateTime, y = Heart)) + 
   geom_point() +
   xlab("Date and Time")+
   ylab("Heart rate")
@@ -65,6 +65,6 @@ library(ggplot2)
     geom_point(aes(colour = factor(DateTime)), alpha = 1/5) +
     xlab("Date and Time")+
     ylab("Distance")
-  plot(scatter_cat)       
+  plot(scatter_cat)     
   
   
