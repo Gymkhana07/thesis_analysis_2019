@@ -1,0 +1,116 @@
+---
+title: "AW_HealthDataPrep"
+author: "Bo Simango"
+date: "January 30, 2019"
+output: 
+  html_document:
+    keep_md: yes
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Created by Bo Simango
+# M.Sc. candidate 
+# Supervisor: Dr. Daniel Fuller
+# Memorial University of Newfoundland
+# Date: 30 January 2019
+# Function: This code appends the Health Data Collector app data by participant ID (107-111) and plots the HR, Steps and Calories vs. Time using two R packages ggplot2 and facet_wrap
+# Data source: Health Data Collector App - AW data 
+# Output: Appended CSVs, ggplot facet wrap and mice imputation 
+
+# First install all libraries used throughout this exercise 
+```
+
+```{r}
+library(knitr)
+library(haven)
+library(ggplot2)
+library(plyr)
+library(readr)
+```
+
+```{r}
+# Set working directory
+setwd("C:/Thesis")
+
+```
+
+```{r}
+# Read Health Data Collector App data 
+a_107 <- read.csv("applewatch_data107.csv")
+a_108 <- read.csv("applewatch_data108.csv")
+a_109 <- read.csv("applewatch_data109.csv")
+a_110 <- read.csv("applewatch_data110.csv")
+a_111 <- read.csv("applewatch_data111.csv")
+```
+
+```{r}
+# Summary of statistical descriptives of each participant ID
+summary(a_107)
+summary(a_108)
+summary(a_109)
+summary(a_110)
+summary(a_111)
+```
+
+```{r}
+# Append all participant ID CSVs 
+applewatch_all <- rbind (a_107, a_108, a_109, a_110, a_111)
+```
+
+```{r}
+# Summary of statistical descriptives of each participant ID
+summary(applewatch_all)
+```
+
+```{r}
+#Scatterplot of Heart rate vs. Time via Facet Wrap 
+  ggplot(applewatch_all, aes(x = DateTime, y = Heart, colour=Part_ID, group=Part_ID)) + 
+    geom_line() +
+  facet_wrap(~Part_ID, scales ="free_y") 
+```
+
+```{r}
+#Scatterplot of Heart rate vs. Time, Condensed Scatter Plot 
+ggplot(applewatch_all, aes(x = DateTime, y = Heart, colour=Part_ID, group=Part_ID)) + 
+  geom_point()
+  facet_wrap(~Part_ID, scales ="free_y") 
+```
+
+
+```{r}
+#Scatterplot of Calories vs. Time via Facet Wrap 
+  ggplot(applewatch_all, aes(x = DateTime, y = Calories, colour=Part_ID, group=Part_ID)) + 
+    geom_line() +
+  facet_wrap(~Part_ID, scales ="free_y")
+```  
+
+```{r}
+#Scatterplot of Calories vs. Time, Condensed Scatter Plot 
+  ggplot(applewatch_all, aes(x = DateTime, y = Calories, colour=Part_ID, group=Part_ID)) + 
+    geom_point()
+  facet_wrap(~Part_ID, scales ="free_y")
+```
+
+```{r}
+#Scatterplot of Steps vs. Time via Facet Wrap 
+  ggplot(applewatch_all, aes(x = DateTime, y = Steps, colour=Part_ID, group=Part_ID)) + 
+    geom_line() +
+    facet_wrap(~Part_ID, scales ="free_y") 
+```
+
+```{r}
+#Scatterplot of Steps vs. Time, Condensed Scatter Plot 
+  ggplot(applewatch_all, aes(x = DateTime, y = Steps, colour=Part_ID, group=Part_ID)) + 
+    geom_point()
+  facet_wrap(~Part_ID, scales ="free_y")
+```
+
+```{r}
+setwd("C:/Thesis")
+write.csv (applewatch_all, file='applewatch_all.csv')
+```
