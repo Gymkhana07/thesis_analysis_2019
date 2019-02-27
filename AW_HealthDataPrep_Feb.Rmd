@@ -1,0 +1,144 @@
+---
+title: "AW_HealthDataPrep_14Feb"
+author: "me"
+date: "14/02/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+---
+  title: "AW_HealthDataPrep"
+author: "Bo Simango"
+date: "February 14, 2019"
+output: 
+  html_document:
+  keep_md: yes
+pdf_document: default
+---
+  
+```{r}
+# Created by Bo Simango
+# M.Sc. candidate 
+# Supervisor: Dr. Daniel Fuller
+# Memorial University of Newfoundland
+# Date: February 5, 2019
+# Function: This code appends the Health Data Collector app data by participant ID (107-111) and plots the HR, Steps and Calories vs. Time using two R packages ggplot2 and facet_wrap
+# Data source: Health Data Collector App - AW data 
+# Output: Appended CSVs, ggplot facet wrap and mice imputation 
+# First install all libraries used throughout this exercise 
+```
+
+```{r}
+library(knitr)
+library(haven)
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(readr)
+install.packages("stargazer")
+library(stargazer)
+library(missForest)
+```
+
+```{r}
+# Set working directory
+setwd("Z:/Research/dfuller/Walkabilly/studies/smarphone_accel/data/HealthData")
+```
+
+```{r}
+# Read Health Data Collector App data 
+a_107 <- read.csv("Z:/Research/dfuller/Walkabilly/studies/smarphone_accel/data/HealthData/107/applewatch_data107.csv")
+a_108 <- read.csv("Z:/Research/dfuller/Walkabilly/studies/smarphone_accel/data/HealthData/108/applewatch_data108.csv")
+a_109 <- read.csv("Z:/Research/dfuller/Walkabilly/studies/smarphone_accel/data/HealthData/109/applewatch_data109.csv")
+a_110 <- read.csv("Z:/Research/dfuller/Walkabilly/studies/smarphone_accel/data/HealthData/110/applewatch_data110.csv")
+a_111 <- read.csv("Z:/Research/dfuller/Walkabilly/studies/smarphone_accel/data/HealthData/111/applewatch_data111.csv")
+```
+
+```{r}
+# Add participant ID column 
+a_107$Participant_ID <- 107
+a_108$Participant_ID <- 108
+a_109$Participant_ID <- 109
+a_110$Participant_ID <- 110
+a_111$Participant_ID <- 111
+```
+
+```{r}
+# Add activity column 
+a_107$activity 
+a_108$activity 
+a_109$activity 
+a_110$activity 
+a_111$activity 
+```
+
+```{r}
+# Append all participant ID CSVs 
+applewatch_all <- rbind (a_107, a_108, a_109, a_110, a_111)
+```
+
+```{r}
+# Add activity stage colum to csv 
+applewatch_all$activity_stage <- ""
+```
+
+```{r}
+# Summary of statistical descriptives 
+summary(applewatch_all)
+```
+
+```{r}
+# Summary of statistical descriptives using Stargazer 
+stargazer(applewatch_all, type = "text")
+```
+
+```{r}
+# Add summary by participant FIX ME 
+# applewatch_all %>% 
+  group_by(applewatch_all,Participant_ID, add = FALSE) %>%
+    summarize(stargazer(applewatch_all, type = "text"))
+```
+
+```{r}
+## Add stages for each participant
+```
+
+```{r}  
+#Scatterplot of Heart rate vs. Time, Condensed Scatter Plot 
+ggplot(applewatch_all, aes(x = DateTime, y = Heart, colour=Participant_ID, group=Participant_ID)) + 
+  geom_point() +
+facet_wrap(~Participant_ID, scales ="free_y" )
+```
+
+```{r}
+#Scatterplot of Calories vs. Time, Condensed Scatter Plot 
+ggplot(applewatch_all, aes(x = DateTime, y = Calories, colour=Participant_ID, group=Participant_ID)) + 
+  geom_point() +
+facet_wrap(~Participant_ID, scales ="free_y")
+```
+
+```{r}
+#Scatterplot of Steps vs. Time, Condensed Scatter Plot 
+ggplot(applewatch_all, aes(x = DateTime, y = Steps, colour=Participant_ID, group=Participant_ID)) + 
+  geom_point() +
+facet_wrap(~Participant_ID, scales ="free_y")
+```
+
+```{r}
+### INPUT Missing and create new variables
+
+### Heart_impute  Calories_impute
+
+### Redraw figures for each variable using missing data
+```
+
+
+
+
+```{r}
+setwd("Z:/Research/dfuller/Walkabilly/studies/smarphone_accel/data/HealthData/Bo's working folder")
+write.csv (applewatch_all, file='applewatch_all.csv')
+```
