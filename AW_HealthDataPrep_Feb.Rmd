@@ -2,7 +2,11 @@
 title: "AW_HealthDataPrep_14Feb"
 author: "me"
 date: "14/02/2019"
-output: pdf_document
+output:
+  word_document: default
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -12,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ---
   title: "AW_HealthDataPrep"
 author: "Bo Simango"
-date: "February 14, 2019"
+date: "February 27, 2019"
 output: 
   html_document:
   keep_md: yes
@@ -30,7 +34,7 @@ pdf_document: default
 # Output: Appended CSVs, ggplot facet wrap and mice imputation 
 # First install all libraries used throughout this exercise 
 ```
-
+#========================Libraries=========================
 ```{r}
 library(knitr)
 library(haven)
@@ -42,11 +46,13 @@ install.packages("stargazer")
 library(stargazer)
 library(missForest)
 ```
+# ========================Working Directory=========================
 
 ```{r}
 # Set working directory
 setwd("Z:/Research/dfuller/Walkabilly/studies/smarphone_accel/data/HealthData")
 ```
+# ====================Read Health Data Collector App data================== 
 
 ```{r}
 # Read Health Data Collector App data 
@@ -57,6 +63,7 @@ a_110 <- read.csv("Z:/Research/dfuller/Walkabilly/studies/smarphone_accel/data/H
 a_111 <- read.csv("Z:/Research/dfuller/Walkabilly/studies/smarphone_accel/data/HealthData/111/applewatch_data111.csv")
 ```
 
+# ====================Add participant ID column================== 
 ```{r}
 # Add participant ID column 
 a_107$Participant_ID <- 107
@@ -66,6 +73,7 @@ a_110$Participant_ID <- 110
 a_111$Participant_ID <- 111
 ```
 
+# ====================# Add activity column================== 
 ```{r}
 # Add activity column 
 a_107$activity 
@@ -75,20 +83,26 @@ a_110$activity
 a_111$activity 
 ```
 
+# ====================# Append all participant ID CSVs================== 
+
 ```{r}
 # Append all participant ID CSVs 
 applewatch_all <- rbind (a_107, a_108, a_109, a_110, a_111)
 ```
 
+# ====================# Add activity stage colum to csv ================== 
 ```{r}
 # Add activity stage colum to csv 
 applewatch_all$activity_stage <- ""
 ```
 
+# ====================# Summary of statistical descriptives ================== 
 ```{r}
 # Summary of statistical descriptives 
 summary(applewatch_all)
 ```
+
+# ====================# Summary of statistical descriptives using Stargazer ================== 
 
 ```{r}
 # Summary of statistical descriptives using Stargazer 
@@ -105,6 +119,8 @@ stargazer(applewatch_all, type = "text")
 ```{r}
 ## Add stages for each participant
 ```
+
+#================ #Scatterplot of Heart rate vs. Time, Condensed Scatter Plot ======================
 
 ```{r}  
 #Scatterplot of Heart rate vs. Time, Condensed Scatter Plot 
@@ -133,12 +149,62 @@ facet_wrap(~Participant_ID, scales ="free_y")
 ### Heart_impute  Calories_impute
 
 ### Redraw figures for each variable using missing data
+
+https://www.analyticsvidhya.com/blog/2016/03/tutorial-powerful-packages-imputing-missing-values/
 ```
 
 
+```{r}
+#install MICE
+install.packages("mice")
+library(mice)
+```
+
+```{r}
+#Tabular form of missing value present in each variable in a data set.
+md.pattern(applewatch_all)
+```
+```{r}
+#Visual representation of missing data
+install.packages("VIM")
+library(VIM)
+applewatch_all_plot <- aggr(applewatch_all, col=c('navyblue','yellow'),
+                    numbers=TRUE, sortVars=TRUE,
+                    labels=names(applewatch_all), cex.axis=.7,
+                    gap=3, ylab=c("Missing data","Pattern"))
+#Missing data: 8% of steps data, 11% of heart and calories data 
+```
+```{r}
+#Impute the missing values with summary
+#m - refers to 5 imputed data sets, maxit - refers to number of iterations taken to impute missing values, method-method used, predictive mean matching 
+imputed_Data <- mice(applewatch_all, m=5, maxit = 50, method = 'pmm', seed = 500)
+summary(imputed_Data)
+```
+```{r}
+#Check imputed Heart values 
+imputed_Data$imp$Heart
+```
+```{r}
+#Check imputed Steps values 
+imputed_Data$imp$Steps
+```
+
+```{r}
+#Check imputed Calories values 
+imputed_Data$imp$Calories
+```
+
+```{r}
+#Get complete data ( 2nd out of 5)
+completeData <- complete(imputed_Data,2)
+```
 
 
 ```{r}
+#build predictive model
+fit <- with(data = applewatch_all, exp = lm(Heart ~ Calories + Steps)) 
+```
+
 setwd("Z:/Research/dfuller/Walkabilly/studies/smarphone_accel/data/HealthData/Bo's working folder")
 write.csv (applewatch_all, file='applewatch_all.csv')
 ```
